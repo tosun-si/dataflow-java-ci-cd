@@ -1,0 +1,46 @@
+{
+  "name": "Team League Java App",
+  "description": "A Team League App with an example of Dead Letter Queues with Beam and Asgarde Library",
+  "parameters": [
+    {
+      "name": "inputJsonFile",
+      "label": "Input Json file.",
+      "helpText": "Input Json file to read from."
+    },
+    {
+      "name": "inputFileSlogans",
+      "label": "Side Input Slogans file.",
+      "helpText": "Side Input Slogans file."
+    },
+    {
+      "name": "teamLeagueDataset",
+      "label": "Team League output Dataset.",
+      "helpText": "Team League output Dataset."
+    },
+    {
+      "name": "teamStatsTable",
+      "label": "Team Stats table.",
+      "helpText": "Team Stats table."
+    },
+    {
+      "name": "jobType",
+      "label": "Job Type.",
+      "helpText": "Job Type used for Failure part."
+    },
+    {
+      "name": "failureOutputDataset",
+      "label": "Failure output Dataset.",
+      "helpText": "Failure output Dataset."
+    },
+    {
+      "name": "failureOutputTable",
+      "label": "Failure output table.",
+      "helpText": "Failure output table."
+    },
+    {
+      "name": "failureFeatureName",
+      "label": "Failure Feature Name.",
+      "helpText": "Failure Feature Name."
+    }
+  ]
+}

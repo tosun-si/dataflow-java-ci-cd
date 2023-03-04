@@ -1,0 +1,18 @@
+steps:
+  - name: maven:3.8.6-openjdk-11-slim
+    script: |
+      mvn clean package
+  - name: google/cloud-sdk:420.0.0-slim
+    args: [ './scripts/deploy_dataflow_job.sh' ]
+    env:
+      - 'PROJECT_ID=$PROJECT_ID'
+      - 'LOCATION=$LOCATION'
+      - 'REPO_NAME=$_REPO_NAME'
+      - 'IMAGE_NAME=$_IMAGE_NAME'
+      - 'IMAGE_TAG=$_IMAGE_TAG'
+      - 'METADATA_TEMPLATE_FILE_PATH=$_METADATA_TEMPLATE_FILE_PATH'
+      - 'SDK_LANGUAGE=$_SDK_LANGUAGE'
+      - 'FLEX_TEMPLATE_BASE_IMAGE=$_FLEX_TEMPLATE_BASE_IMAGE'
+      - 'METADATA_FILE=$_METADATA_FILE'
+      - 'JAR=$_JAR'
+      - 'FLEX_TEMPLATE_JAVA_MAIN_CLASS=$_FLEX_TEMPLATE_JAVA_MAIN_CLASS'
