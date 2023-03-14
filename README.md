@@ -1,4 +1,8 @@
-# teams-league-java-ddd-beam-summit
+# dataflow-java-ci-cd
+
+The Medium article for this use case :
+
+https://medium.com/@mazlum.tosun/ci-cd-for-dataflow-java-with-flex-templates-and-cloud-build-e3c584b8e564
 
 ## Run job with Dataflow runner from local machine :
 
@@ -103,5 +107,64 @@ gcloud builds submit \
     --verbosity="debug" .
 ```
 
+# Deploy and run the template with Cloud Build with triggers
 
+### Run unit tests with automatic trigger on Github repository
+
+```bash
+gcloud beta builds triggers create github \
+    --project=$PROJECT_ID \
+    --region=$LOCATION \
+    --repo-name=dataflow-java-ci-cd \
+    --repo-owner=tosun-si \
+    --branch-pattern=".*" \
+    --build-config=dataflow-run-tests.yaml \
+    --include-logs-with-status \
+    --verbosity="debug"
+```
+
+### Run the deploy template with a manual trigger on Github repository
+
+```bash
+gcloud beta builds triggers create github \
+    --project=$PROJECT_ID \
+    --region=$LOCATION \
+    --name="launch-dataflow-unit-tests-team-league-java" \
+    --repo-name=dataflow-java-ci-cd \
+    --repo-owner=tosun-si \
+    --branch-pattern=".*" \
+    --build-config=dataflow-run-tests.yaml \
+    --include-logs-with-status \
+    --verbosity="debug"
+```
+
+### Deploy the Flex Template with a manual trigger on Github repository
+
+```bash
+gcloud beta builds triggers create manual \
+    --project=$PROJECT_ID \
+    --region=$LOCATION \
+    --name="deploy-dataflow-template-team-league-java" \
+    --repo="https://github.com/tosun-si/dataflow-java-ci-cd" \
+    --repo-type="GITHUB" \
+    --branch="main" \
+    --build-config="dataflow-deploy-job.yaml" \
+    --substitutions _REPO_NAME="internal-images",_IMAGE_NAME="dataflow/team-league-java",_IMAGE_TAG="latest",_METADATA_TEMPLATE_FILE_PATH="gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java.json",_SDK_LANGUAGE="JAVA",_FLEX_TEMPLATE_BASE_IMAGE="JAVA11",_METADATA_FILE="-",_JAR="target/teams-league-0.1.0.jar",_FLEX_TEMPLATE_JAVA_MAIN_CLASS="fr.groupbees.application.TeamLeagueApp" \
+    --verbosity="debug"
+```
+
+### Run the Flex Template with a manual trigger on Github repository
+
+```bash
+gcloud beta builds triggers create manual \
+    --project=$PROJECT_ID \
+    --region=$LOCATION \
+    --name="run-dataflow-template-team-league-java" \
+    --repo="https://github.com/tosun-si/dataflow-java-ci-cd" \
+    --repo-type="GITHUB" \
+    --branch="main" \
+    --build-config="dataflow-run-job.yaml" \
+    --substitutions _JOB_NAME="team-league-java",_METADATA_TEMPLATE_FILE_PATH="gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java.json",_TEMP_LOCATION="gs://mazlum_dev/dataflow/temp",_STAGING_LOCATION="gs://mazlum_dev/dataflow/staging",_SA_EMAIL="sa-dataflow-dev@gb-poc-373711.iam.gserviceaccount.com",_INPUT_FILE="gs://mazlum_dev/team_league/input/json/input_teams_stats_raw.json",_SIDE_INPUT_FILE="gs://mazlum_dev/team_league/input/json/input_team_slogans.json",_TEAM_LEAGUE_DATASET="mazlum_test",_TEAM_STATS_TABLE="team_stat",_JOB_TYPE="team_league_java_ingestion_job",_FAILURE_OUTPUT_DATASET="mazlum_test",_FAILURE_OUTPUT_TABLE="job_failure",_FAILURE_FEATURE_NAME="team_league" \
+    --verbosity="debug"
+```
 
