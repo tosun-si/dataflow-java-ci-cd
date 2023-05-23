@@ -1,0 +1,60 @@
+image: maven:3.8.6-openjdk-11-slim
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository"
+  ENV_DEV: "dev"
+  GCLOUD_IMAGE_NAME: google/cloud-sdk:420.0.0
+
+cache:
+  key:
+    files:
+      - pom.xml
+    prefix: ${CI_PROJECT_ID}
+  paths:
+    - $CI_PROJECT_DIR/.m2/repository
+
+stages:
+  - tests
+  - build_fat_jar
+  - deploy_flex_template
+  - run_dataflow_job
+
+tests:
+  stage: tests
+  script:
+    - mvn test
+  artifacts:
+    expire_in: 4 hrs
+    paths:
+      - target
+
+build_fat_jar:
+  stage: build_fat_jar
+  script:
+    - mvn clean package
+  artifacts:
+    expire_in: 4 hrs
+    paths:
+      - target/*.jar
+
+deploy_flex_template:
+  image: $GCLOUD_IMAGE_NAME
+  stage: deploy_flex_template
+  when: manual
+  before_script:
+    - . ./scripts/export_env_variables.sh
+  script:
+    - . ./scripts/gcp_authentication.sh
+    - . ./scripts/deploy_dataflow_job.sh
+  environment:
+    name: $ENV_DEV
+
+run_dataflow_job:
+  image: $GCLOUD_IMAGE_NAME
+  stage: run_dataflow_job
+  when: manual
+  before_script:
+    - . ./scripts/export_env_variables.sh
+  script:
+    - . ./scripts/gcp_authentication.sh
+    - . ./scripts/run_dataflow_job.sh
