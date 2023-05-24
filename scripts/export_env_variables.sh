@@ -10,6 +10,7 @@ export LOCATION=europe-west1
 export REPO_NAME=internal-images
 export IMAGE_NAME="dataflow/team-league-java"
 export IMAGE_TAG=latest
+export METADATA_FILE="config/metadata.json"
 export METADATA_TEMPLATE_FILE_PATH="gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java.json"
 export SDK_LANGUAGE=JAVA
 export FLEX_TEMPLATE_BASE_IMAGE=JAVA11

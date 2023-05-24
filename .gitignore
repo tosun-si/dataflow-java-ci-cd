@@ -1,5 +1,6 @@
 .idea
 target
+secrets
 *.iml
 **/avro/generated
 .DS_Store

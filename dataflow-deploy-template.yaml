@@ -3,7 +3,7 @@ steps:
     script: |
       mvn clean package
   - name: google/cloud-sdk:420.0.0-slim
-    args: [ './scripts/deploy_dataflow_job.sh' ]
+    args: [ './scripts/build_image_and_create_spec_file_with_template_build.sh' ]
     env:
       - 'PROJECT_ID=$PROJECT_ID'
       - 'LOCATION=$LOCATION'
@@ -16,3 +16,6 @@ steps:
       - 'METADATA_FILE=$_METADATA_FILE'
       - 'JAR=$_JAR'
       - 'FLEX_TEMPLATE_JAVA_MAIN_CLASS=$_FLEX_TEMPLATE_JAVA_MAIN_CLASS'
+#logsBucket: 'gs://cloud-build-ci-cd-groupbees'
+#options:
+#  logging: GCS_ONLY
