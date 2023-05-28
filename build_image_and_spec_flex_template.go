@@ -60,7 +60,7 @@ func main() {
 			"europe-west1-docker.pkg.dev/gb-poc-373711/internal-images/dataflow/team-league-java-dagger:latest",
 		}).
 		//WithExec([]string{
-		//	"./scripts/build_dataflow_image_kaniko_dagger.sh",
+		//	"./scripts/build_image_kaniko_dagger.sh",
 		//}).
 		Directory(".")
 
