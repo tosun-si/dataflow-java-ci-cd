@@ -15,7 +15,6 @@ cache:
 
 stages:
   - tests
-  - build_fat_jar
   - build_flex_template_image
   - deploy_flex_template
   - run_dataflow_job
@@ -28,15 +27,6 @@ tests:
     expire_in: 4 hrs
     paths:
       - target
-
-build_fat_jar:
-  stage: build_fat_jar
-  script:
-    - mvn clean package
-  artifacts:
-    expire_in: 4 hrs
-    paths:
-      - target/*.jar
 
 build_flex_template_image:
   image:
