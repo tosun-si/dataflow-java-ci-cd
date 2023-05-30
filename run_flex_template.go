@@ -9,6 +9,22 @@ import (
 )
 
 func main() {
+	projectId := os.Getenv("PROJECT_ID")
+	location := os.Getenv("LOCATION")
+	jobName := os.Getenv("JOB_NAME")
+	metadataTemplateFilePath := os.Getenv("METADATA_TEMPLATE_FILE_PATH")
+	tempLocation := os.Getenv("TEMP_LOCATION")
+	stagingLocation := os.Getenv("STAGING_LOCATION")
+	saEmail := os.Getenv("SA_EMAIL")
+	inputFile := os.Getenv("INPUT_FILE")
+	sideInputFile := os.Getenv("SIDE_INPUT_FILE")
+	teamLeagueDataset := os.Getenv("TEAM_LEAGUE_DATASET")
+	teamLeagueTable := os.Getenv("TEAM_STATS_TABLE")
+	jobType := os.Getenv("JOB_TYPE")
+	failureOutputDataset := os.Getenv("FAILURE_OUTPUT_DATASET")
+	failureOutputTable := os.Getenv("FAILURE_OUTPUT_TABLE")
+	failureFeatureName := os.Getenv("FAILURE_FEATURE_NAME")
+
 	ctx := context.Background()
 	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
 
@@ -23,9 +39,9 @@ func main() {
 		"gcloud",
 		"auth",
 		"activate-service-account",
-		"sa-dataflow-dev@gb-poc-373711.iam.gserviceaccount.com",
+		saEmail,
 		"--key-file=./secrets/sa-dataflow.json",
-		"--project=gb-poc-373711",
+		fmt.Sprintf("--project=%s", projectId),
 	}
 
 	source := client.Container().
@@ -37,46 +53,27 @@ func main() {
 	runFlexTemplate := client.Container().
 		From("google/cloud-sdk:420.0.0-slim").
 		WithDirectory(".", source).
-		WithEnvVariable("PROJECT_ID", "gb-poc-373711").
-		WithEnvVariable("LOCATION", "europe-west1").
-		WithEnvVariable("REPO_NAME", "internal-images").
-		WithEnvVariable("IMAGE_NAME", "dataflow/team-league-java-dagger").
-		WithEnvVariable("IMAGE_TAG", "latest").
-		WithEnvVariable("METADATA_TEMPLATE_FILE_PATH", "gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java-dagger.json").
-		WithEnvVariable("SDK_LANGUAGE", "JAVA").
-		WithEnvVariable("METADATA_FILE", "config/metadata.json").
+		WithEnvVariable("PROJECT_ID", projectId).
+		WithEnvVariable("LOCATION", location).
+		WithEnvVariable("JOB_NAME", jobName).
+		WithEnvVariable("METADATA_TEMPLATE_FILE_PATH", metadataTemplateFilePath).
+		WithEnvVariable("TEMP_LOCATION", tempLocation).
+		WithEnvVariable("STAGING_LOCATION", stagingLocation).
+		WithEnvVariable("SA_EMAIL", saEmail).
+		WithEnvVariable("INPUT_FILE", inputFile).
+		WithEnvVariable("SIDE_INPUT_FILE", sideInputFile).
+		WithEnvVariable("TEAM_LEAGUE_DATASET", teamLeagueDataset).
+		WithEnvVariable("TEAM_STATS_TABLE", teamLeagueTable).
+		WithEnvVariable("JOB_TYPE", jobType).
+		WithEnvVariable("FAILURE_OUTPUT_DATASET", failureOutputDataset).
+		WithEnvVariable("FAILURE_OUTPUT_TABLE", failureOutputTable).
+		WithEnvVariable("FAILURE_FEATURE_NAME", failureFeatureName).
 		WithEnvVariable("GOOGLE_APPLICATION_CREDENTIALS", "./secrets/sa-dataflow.json").
 		WithExec(activateServiceAccount).
 		WithExec([]string{
-			"gcloud",
-			"dataflow",
-			"flex-template",
-			"run",
-			"team-league-java-dagger",
-			"--template-file-gcs-location",
-			"gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java-dagger.json",
-			"--project=gb-poc-373711",
-			"--region=europe-west1",
-			"--temp-location=gs://mazlum_dev/dataflow/temp",
-			"--staging-location=gs://mazlum_dev/dataflow/staging",
-			"--parameters",
-			"serviceAccount=sa-dataflow-dev@gb-poc-373711.iam.gserviceaccount.com",
-			"--parameters",
-			"inputJsonFile=gs://mazlum_dev/team_league/input/json/input_teams_stats_raw.json",
-			"--parameters",
-			"inputFileSlogans=gs://mazlum_dev/team_league/input/json/input_team_slogans.json",
-			"--parameters",
-			"teamLeagueDataset=mazlum_test",
-			"--parameters",
-			"teamStatsTable=team_stat",
-			"--parameters",
-			"jobType=team_league_java_ingestion_job",
-			"--parameters",
-			"failureOutputDataset=mazlum_test",
-			"--parameters",
-			"failureOutputTable=job_failure",
-			"--parameters",
-			"failureFeatureName=team_league",
+			"sh",
+			"-c",
+			"./scripts/run_dataflow_job.sh",
 		})
 
 	out, err := runFlexTemplate.Stdout(ctx)

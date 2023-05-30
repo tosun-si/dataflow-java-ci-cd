@@ -4,7 +4,7 @@ set -e
 set -o pipefail
 set -u
 
-export PROJECT_ID=$GCP_PROJECT_ID
+export PROJECT_ID=gb-poc-373711
 export LOCATION=europe-west1
 
 export REPO_NAME=internal-images

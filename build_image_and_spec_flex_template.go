@@ -9,6 +9,16 @@ import (
 )
 
 func main() {
+	projectId := os.Getenv("PROJECT_ID")
+	location := os.Getenv("LOCATION")
+	repoName := os.Getenv("REPO_NAME")
+	imageName := os.Getenv("IMAGE_NAME")
+	imageTag := os.Getenv("IMAGE_TAG")
+	metadataTemplateFilePath := os.Getenv("METADATA_TEMPLATE_FILE_PATH")
+	sdkLanguage := os.Getenv("SDK_LANGUAGE")
+	metadataFile := os.Getenv("METADATA_FILE")
+	saEmail := os.Getenv("SA_EMAIL")
+
 	ctx := context.Background()
 	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
 
@@ -23,9 +33,9 @@ func main() {
 		"gcloud",
 		"auth",
 		"activate-service-account",
-		"sa-dataflow-dev@gb-poc-373711.iam.gserviceaccount.com",
+		saEmail,
 		"--key-file=./secrets/sa-dataflow.json",
-		"--project=gb-poc-373711",
+		fmt.Sprintf("--project=%s", projectId),
 	}
 
 	source := client.Container().
@@ -38,57 +48,40 @@ func main() {
 		From("gcr.io/kaniko-project/executor:v1.9.0-debug").
 		WithEntrypoint([]string{}).
 		WithDirectory(".", source).
-		//WithWorkdir("/src").
-		WithEnvVariable("PROJECT_ID", "gb-poc-373711").
-		WithEnvVariable("LOCATION", "europe-west1").
-		WithEnvVariable("REPO_NAME", "internal-images").
-		WithEnvVariable("IMAGE_NAME", "dataflow/team-league-java-dagger").
-		WithEnvVariable("IMAGE_TAG", "latest").
-		WithEnvVariable("METADATA_TEMPLATE_FILE_PATH", "gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java.json").
-		WithEnvVariable("SDK_LANGUAGE", "JAVA").
-		WithEnvVariable("METADATA_FILE", "config/metadata.json").
+		WithEnvVariable("PROJECT_ID", projectId).
+		WithEnvVariable("LOCATION", location).
+		WithEnvVariable("REPO_NAME", repoName).
+		WithEnvVariable("IMAGE_NAME", imageName).
+		WithEnvVariable("IMAGE_TAG", imageTag).
+		WithEnvVariable("METADATA_TEMPLATE_FILE_PATH", metadataTemplateFilePath).
+		WithEnvVariable("SDK_LANGUAGE", sdkLanguage).
+		WithEnvVariable("METADATA_FILE", metadataFile).
 		WithEnvVariable("GOOGLE_APPLICATION_CREDENTIALS", "./secrets/sa-dataflow.json").
 		WithExec([]string{
-			"/kaniko/executor",
-			//"--use-new-run",
-			"--compressed-caching=false",
-			"--single-snapshot",
-			"--context=dir://./",
-			"--dockerfile",
-			"Dockerfile",
-			"--destination",
-			"europe-west1-docker.pkg.dev/gb-poc-373711/internal-images/dataflow/team-league-java-dagger:latest",
+			"sh",
+			"-c",
+			"/kaniko/executor --use-new-run --single-snapshot --context=dir://./ --dockerfile Dockerfile --destination $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG",
 		}).
-		//WithExec([]string{
-		//	"./scripts/build_image_kaniko_dagger.sh",
-		//}).
 		Directory(".")
 
 	createFlexTemplateSpecFileGcs := client.Container().
 		From("google/cloud-sdk:420.0.0-slim").
 		WithDirectory(".", buildFlexTemplateImage).
-		WithEnvVariable("PROJECT_ID", "gb-poc-373711").
-		WithEnvVariable("LOCATION", "europe-west1").
-		WithEnvVariable("REPO_NAME", "internal-images").
-		WithEnvVariable("IMAGE_NAME", "dataflow/team-league-java-dagger").
-		WithEnvVariable("IMAGE_TAG", "latest").
-		WithEnvVariable("METADATA_TEMPLATE_FILE_PATH", "gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java-dagger.json").
-		WithEnvVariable("SDK_LANGUAGE", "JAVA").
-		WithEnvVariable("METADATA_FILE", "config/metadata.json").
+		WithDirectory(".", buildFlexTemplateImage).
+		WithEnvVariable("PROJECT_ID", projectId).
+		WithEnvVariable("LOCATION", location).
+		WithEnvVariable("REPO_NAME", repoName).
+		WithEnvVariable("IMAGE_NAME", imageName).
+		WithEnvVariable("IMAGE_TAG", imageTag).
+		WithEnvVariable("METADATA_TEMPLATE_FILE_PATH", metadataTemplateFilePath).
+		WithEnvVariable("SDK_LANGUAGE", sdkLanguage).
+		WithEnvVariable("METADATA_FILE", metadataFile).
 		WithEnvVariable("GOOGLE_APPLICATION_CREDENTIALS", "./secrets/sa-dataflow.json").
 		WithExec(activateServiceAccount).
 		WithExec([]string{
-			"gcloud",
-			"dataflow",
-			"flex-template",
-			"build",
-			"gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java-dagger.json",
-			"--image",
-			"europe-west1-docker.pkg.dev/gb-poc-373711/internal-images/dataflow/team-league-java-dagger:latest",
-			"--sdk-language",
-			"JAVA",
-			"--metadata-file",
-			"config/metadata.json",
+			"sh",
+			"-c",
+			"./scripts/create_flex_template_spec_file_gcs.sh",
 		})
 
 	out, err := createFlexTemplateSpecFileGcs.Stdout(ctx)
