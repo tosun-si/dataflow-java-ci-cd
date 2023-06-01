@@ -16,7 +16,7 @@ cache:
 stages:
   - tests
   - build_flex_template_image
-  - deploy_flex_template
+  - deploy_flex_template_spec_file
   - run_dataflow_job
 
 tests:
@@ -41,9 +41,9 @@ build_flex_template_image:
   environment:
     name: $ENV_DEV
 
-deploy_flex_template:
+deploy_flex_template_spec_file:
   image: $GCLOUD_IMAGE_NAME
-  stage: deploy_flex_template
+  stage: deploy_flex_template_spec_file
   when: manual
   before_script:
     - . ./scripts/export_env_variables.sh

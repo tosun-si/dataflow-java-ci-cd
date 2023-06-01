@@ -67,7 +67,6 @@ func main() {
 	createFlexTemplateSpecFileGcs := client.Container().
 		From("google/cloud-sdk:420.0.0-slim").
 		WithDirectory(".", buildFlexTemplateImage).
-		WithDirectory(".", buildFlexTemplateImage).
 		WithEnvVariable("PROJECT_ID", projectId).
 		WithEnvVariable("LOCATION", location).
 		WithEnvVariable("REPO_NAME", repoName).
