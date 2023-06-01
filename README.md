@@ -151,7 +151,7 @@ gcloud beta builds triggers create manual \
     --repo-type="GITHUB" \
     --branch="main" \
     --build-config="dataflow-deploy-template-dockerfile-all-dependencies.yaml" \
-    --substitutions _REPO_NAME="internal-images",_IMAGE_NAME="dataflow/team-league-java",_IMAGE_TAG="latest",_METADATA_TEMPLATE_FILE_PATH="gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java.json",_SDK_LANGUAGE="JAVA",_FLEX_TEMPLATE_BASE_IMAGE="JAVA11",_METADATA_FILE="config/metadata.json",_JAR="target/teams-league-0.1.0.jar",_FLEX_TEMPLATE_JAVA_MAIN_CLASS="fr.groupbees.application.TeamLeagueApp" \
+    --substitutions _REPO_NAME="internal-images",_IMAGE_NAME="dataflow/team-league-java",_IMAGE_TAG="latest",_METADATA_TEMPLATE_FILE_PATH="gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java.json",_SDK_LANGUAGE="JAVA",_METADATA_FILE="config/metadata.json" \
     --verbosity="debug"
 ```
 

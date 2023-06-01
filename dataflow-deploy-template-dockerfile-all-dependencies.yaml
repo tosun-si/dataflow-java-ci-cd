@@ -15,6 +15,3 @@ steps:
       - 'METADATA_TEMPLATE_FILE_PATH=$_METADATA_TEMPLATE_FILE_PATH'
       - 'SDK_LANGUAGE=$_SDK_LANGUAGE'
       - 'METADATA_FILE=$_METADATA_FILE'
-#logsBucket: 'gs://cloud-build-ci-cd-groupbees'
-#options:
-#  logging: GCS_ONLY
