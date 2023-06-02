@@ -5,6 +5,7 @@ steps:
   - name: google/cloud-sdk:420.0.0-slim
     args: [ './scripts/build_image_and_create_spec_file_with_template_build.sh' ]
     env:
+      - 'CI_SERVICE_NAME=cloud-build'
       - 'PROJECT_ID=$PROJECT_ID'
       - 'LOCATION=$LOCATION'
       - 'REPO_NAME=$_REPO_NAME'

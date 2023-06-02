@@ -4,6 +4,7 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository"
   ENV_DEV: "dev"
   GCLOUD_IMAGE_NAME: google/cloud-sdk:420.0.0
+  CI_SERVICE_NAME: gitlab-ci
 
 cache:
   key:
