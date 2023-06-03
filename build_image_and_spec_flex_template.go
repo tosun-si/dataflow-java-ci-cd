@@ -54,14 +54,11 @@ func main() {
 		WithEnvVariable("REPO_NAME", repoName).
 		WithEnvVariable("IMAGE_NAME", imageName).
 		WithEnvVariable("IMAGE_TAG", imageTag).
-		WithEnvVariable("METADATA_TEMPLATE_FILE_PATH", metadataTemplateFilePath).
-		WithEnvVariable("SDK_LANGUAGE", sdkLanguage).
-		WithEnvVariable("METADATA_FILE", metadataFile).
 		WithEnvVariable("GOOGLE_APPLICATION_CREDENTIALS", "./secrets/sa-dataflow.json").
 		WithExec([]string{
 			"sh",
 			"-c",
-			"/kaniko/executor --use-new-run --single-snapshot --context=dir://./ --dockerfile Dockerfile --destination $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$IMAGE_TAG",
+			"/kaniko/executor --use-new-run --single-snapshot --context=dir://./ --dockerfile Dockerfile --destination $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME/$CI_SERVICE_NAME:$IMAGE_TAG",
 		}).
 		Directory(".")
 

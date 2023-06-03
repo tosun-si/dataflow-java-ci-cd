@@ -132,6 +132,7 @@ gcloud builds submit \
 gcloud beta builds triggers create github \
     --project=$PROJECT_ID \
     --region=$LOCATION \
+    --name="run-dataflow-unit-tests-java" \
     --repo-name=dataflow-java-ci-cd \
     --repo-owner=tosun-si \
     --branch-pattern=".*" \
@@ -165,7 +166,7 @@ gcloud beta builds triggers create manual \
     --repo="https://github.com/tosun-si/dataflow-java-ci-cd" \
     --repo-type="GITHUB" \
     --branch="main" \
-    --build-config="dataflow-deploy-job.yaml" \
+    --build-config="dataflow-deploy-template.yaml" \
     --substitutions _REPO_NAME="internal-images",_IMAGE_NAME="dataflow/team-league-java",_IMAGE_TAG="latest",_METADATA_TEMPLATE_FILE_PATH="gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java.json",_SDK_LANGUAGE="JAVA",_FLEX_TEMPLATE_BASE_IMAGE="JAVA11",_METADATA_FILE="config/metadata.json",_JAR="target/teams-league-0.1.0.jar",_FLEX_TEMPLATE_JAVA_MAIN_CLASS="fr.groupbees.application.TeamLeagueApp" \
     --verbosity="debug"
 ```
@@ -180,7 +181,7 @@ gcloud beta builds triggers create manual \
     --repo="https://github.com/tosun-si/dataflow-java-ci-cd" \
     --repo-type="GITHUB" \
     --branch="main" \
-    --build-config="dataflow-run-job.yaml" \
+    --build-config="dataflow-run-template.yaml" \
     --substitutions _JOB_NAME="team-league-java",_METADATA_TEMPLATE_FILE_PATH="gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java.json",_TEMP_LOCATION="gs://mazlum_dev/dataflow/temp",_STAGING_LOCATION="gs://mazlum_dev/dataflow/staging",_SA_EMAIL="sa-dataflow-dev@gb-poc-373711.iam.gserviceaccount.com",_INPUT_FILE="gs://mazlum_dev/team_league/input/json/input_teams_stats_raw.json",_SIDE_INPUT_FILE="gs://mazlum_dev/team_league/input/json/input_team_slogans.json",_TEAM_LEAGUE_DATASET="mazlum_test",_TEAM_STATS_TABLE="team_stat",_JOB_TYPE="team_league_java_ingestion_job",_FAILURE_OUTPUT_DATASET="mazlum_test",_FAILURE_OUTPUT_TABLE="job_failure",_FAILURE_FEATURE_NAME="team_league" \
     --verbosity="debug"
 ```
