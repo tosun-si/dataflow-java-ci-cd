@@ -1,16 +1,24 @@
-name: Deploy Dataflow Flex Template
+name: Run Dataflow Flex Template
 
 env:
   PROJECT_ID: gb-poc-373711
   LOCATION: europe-west1
   CI_SERVICE_NAME: github-actions
 
-  REPO_NAME: internal-images
-  IMAGE_NAME: "dataflow/team-league-java"
-  IMAGE_TAG: latest
-  METADATA_FILE: "config/metadata.json"
   METADATA_TEMPLATE_FILE_PATH: "gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java"
-  SDK_LANGUAGE: "JAVA"
+
+  JOB_NAME: "team-league-java"
+  TEMP_LOCATION: "gs://mazlum_dev/dataflow/temp"
+  STAGING_LOCATION: "gs://mazlum_dev/dataflow/staging"
+  SA_EMAIL: "sa-dataflow-dev@gb-poc-373711.iam.gserviceaccount.com"
+  INPUT_FILE: "gs://mazlum_dev/team_league/input/json/input_teams_stats_raw.json"
+  SIDE_INPUT_FILE: "gs://mazlum_dev/team_league/input/json/input_team_slogans.json"
+  TEAM_LEAGUE_DATASET: "mazlum_test"
+  TEAM_STATS_TABLE: "team_stat"
+  JOB_TYPE: "team_league_java_ingestion_job"
+  FAILURE_OUTPUT_DATASET: "mazlum_test"
+  FAILURE_OUTPUT_TABLE: "job_failure"
+  FAILURE_FEATURE_NAME: "team_league"
 
 on:
   workflow_dispatch:
@@ -41,16 +49,6 @@ jobs:
           version: '>= 444.0.0'
           project_id: '${{ env.PROJECT_ID }}'
 
-      - name: 'Docker auth'
-        run: |-
-          gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev
-
-      - name: 'Build And Publish Flex Template Docker image'
-        run: |-
-          REPO_PATH="${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}/${{ env.CI_SERVICE_NAME }}:${{ env.IMAGE_TAG }}"
-          docker build -t "${REPO_PATH}" .
-          docker push "${REPO_PATH}"
-
-      - name: 'Create Flex Template Spec file'
+      - name: 'Run Flex Template And Dataflow Job'
         run: |
-          scripts/create_flex_template_spec_file_gcs.sh
+          scripts/run_dataflow_job.sh
