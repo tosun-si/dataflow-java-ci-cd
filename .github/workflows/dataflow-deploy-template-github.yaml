@@ -1,0 +1,29 @@
+name: Deploy Dataflow Flex Template
+
+on:
+  push:
+    branches: [ main, feature/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  job_id:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0.4.0'
+        with:
+          workload_identity_provider: 'projects/975119474255/locations/global/workloadIdentityPools/github-actions-ci-cd-pool/providers/github-actions-ci-cd-provider'
+          service_account: 'sa-dataflow-dev@gb-poc-373711.iam.gserviceaccount.com'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+        with:
+          version: '>= 444.0.0'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'

@@ -206,3 +206,29 @@ Run the `run_flex_template.go` script that run the Flex Template and the Dataflo
 ```
 go run build_image_and_spec_flex_template.go
 ```
+
+# CI CD with Github Actions
+
+```bash
+gcloud iam workload-identity-pools create "github-actions-ci-cd-pool" \
+    --project="gb-poc-373711" \
+    --location="global" \
+    --display-name="Pool for CI CD Github actions"
+```
+
+```bash
+gcloud iam workload-identity-pools providers create-oidc "github-actions-ci-cd-provider" \
+    --project="gb-poc-373711" \
+    --location="global" \
+    --workload-identity-pool="github-actions-ci-cd-pool" \
+    --display-name="CI CD Github Actions provider" \
+    --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.aud=assertion.aud" \
+    --issuer-uri="https://token.actions.githubusercontent.com"
+```
+
+```bash
+gcloud iam service-accounts add-iam-policy-binding "sa-dataflow-dev@gb-poc-373711.iam.gserviceaccount.com" \
+    --project="gb-poc-373711" \
+    --role="roles/iam.workloadIdentityUser" \
+    --member="principalSet://iam.googleapis.com/projects/975119474255/locations/global/workloadIdentityPools/github-actions-ci-cd-pool/attribute.repository/tosun-si/dataflow-java-ci-cd"
+```
