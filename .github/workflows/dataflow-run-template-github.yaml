@@ -24,7 +24,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-template:
+  run-template:
 
     runs-on: ubuntu-latest
 
