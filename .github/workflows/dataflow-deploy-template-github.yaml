@@ -6,11 +6,14 @@ env:
   CI_SERVICE_NAME: github-actions
 
   REPO_NAME: internal-images
-  IMAGE_NAME: "dataflow/team-league-java"
+  IMAGE_NAME: 'dataflow/team-league-java'
   IMAGE_TAG: latest
-  METADATA_FILE: "config/metadata.json"
-  METADATA_TEMPLATE_FILE_PATH: "gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java"
-  SDK_LANGUAGE: "JAVA"
+  METADATA_FILE: 'config/metadata.json'
+  METADATA_TEMPLATE_FILE_PATH: 'gs://mazlum_dev/dataflow/templates/team_league/java/team-league-java'
+  SDK_LANGUAGE: 'JAVA'
+
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/975119474255/locations/global/workloadIdentityPools/gb-github-actions-ci-cd-pool/providers/gb-github-actions-ci-cd-provider'
+  SA_CI_CD_EMAIL: 'sa-dataflow-dev@gb-poc-373711.iam.gserviceaccount.com'
 
 on:
   workflow_dispatch:
@@ -32,8 +35,8 @@ jobs:
         id: 'auth'
         uses: 'google-github-actions/auth@v1'
         with:
-          workload_identity_provider: 'projects/975119474255/locations/global/workloadIdentityPools/github-actions-ci-cd-pool/providers/github-actions-ci-cd-provider'
-          service_account: 'sa-dataflow-dev@gb-poc-373711.iam.gserviceaccount.com'
+          workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
+          service_account: '${{ env.SA_CI_CD_EMAIL }}'
 
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'

@@ -209,26 +209,58 @@ go run build_image_and_spec_flex_template.go
 
 # CI CD with Github Actions
 
+## Create Workload Identity Pool and Provider with gcloud commands
+
+### Create the Workload Identity Pool
+
 ```bash
-gcloud iam workload-identity-pools create "github-actions-ci-cd-pool" \
+gcloud iam workload-identity-pools create "gb-github-actions-ci-cd-pool-gcloud" \
     --project="gb-poc-373711" \
     --location="global" \
     --display-name="Pool for CI CD Github actions"
 ```
 
+### Create the Workload Identity Provider
+
 ```bash
-gcloud iam workload-identity-pools providers create-oidc "github-actions-ci-cd-provider" \
+gcloud iam workload-identity-pools providers create-oidc "gb-github-actions-ci-cd-provider-gcloud" \
     --project="gb-poc-373711" \
     --location="global" \
-    --workload-identity-pool="github-actions-ci-cd-pool" \
+    --workload-identity-pool="gb-github-actions-ci-cd-pool-gcloud" \
     --display-name="CI CD Github Actions provider" \
-    --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.aud=assertion.aud" \
+    --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository" \
     --issuer-uri="https://token.actions.githubusercontent.com"
 ```
+
+### Add the Workload Identity Provider to a member of a Service Account with the good role. The provider can authenticate to GCP and impersonate the SA 
 
 ```bash
 gcloud iam service-accounts add-iam-policy-binding "sa-dataflow-dev@gb-poc-373711.iam.gserviceaccount.com" \
     --project="gb-poc-373711" \
     --role="roles/iam.workloadIdentityUser" \
     --member="principalSet://iam.googleapis.com/projects/975119474255/locations/global/workloadIdentityPools/github-actions-ci-cd-pool/attribute.repository/tosun-si/dataflow-java-ci-cd"
+```
+
+## Create Workload Identity Pool and Provider with Terraform
+
+### Plan
+
+```shell
+gcloud builds submit \
+    --project=$PROJECT_ID \
+    --region=$LOCATION \
+    --config create-workload-identity-ci-cd-github-actions-plan.yaml \
+    --substitutions _ENV=dev,_TF_STATE_BUCKET=$TF_STATE_BUCKET,_TF_STATE_PREFIX=$TF_STATE_PREFIX,_GOOGLE_PROVIDER_VERSION=$GOOGLE_PROVIDER_VERSION \
+    --verbosity="debug" .
+```
+
+### Apply
+
+```shell
+gcloud builds submit \
+    --project=$PROJECT_ID \
+    --region=$LOCATION \
+    --config create-workload-identity-ci-cd-github-actions-apply.yaml \
+    --substitutions _ENV=dev,_TF_STATE_BUCKET=$TF_STATE_BUCKET,_TF_STATE_PREFIX=$TF_STATE_PREFIX,_GOOGLE_PROVIDER_VERSION=$GOOGLE_PROVIDER_VERSION \
+    --verbosity="debug" .
 ```
