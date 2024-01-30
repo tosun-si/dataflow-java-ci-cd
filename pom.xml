@@ -16,9 +16,9 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <beam.version>2.45.0</beam.version>
+        <beam.version>2.52.0</beam.version>
 
-        <asgarde.version>0.24.0</asgarde.version>
+        <asgarde.version>0.31.0</asgarde.version>
 
         <junit.version>4.13.1</junit.version>
         <assertj.version>3.23.1</assertj.version>
@@ -30,14 +30,15 @@
         <maven-exec-plugin.version>1.6.0</maven-exec-plugin.version>
         <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
         <maven-shade-plugin.version>3.1.0</maven-shade-plugin.version>
+
         <mockito.version>3.7.7</mockito.version>
-        <pubsub.version>v1-rev20211130-1.32.1</pubsub.version>
+        <pubsub.version>v1-rev20220904-2.0.0</pubsub.version>
         <slf4j.version>1.7.30</slf4j.version>
-        <spark.version>2.4.8</spark.version>
-        <hadoop.version>2.10.1</hadoop.version>
+        <spark.version>3.2.2</spark.version>
+        <hadoop.version>2.10.2</hadoop.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
         <nemo.version>0.1</nemo.version>
-        <flink.artifact.name>beam-runners-flink-1.14</flink.artifact.name>
+        <flink.artifact.name>beam-runners-flink-1.16</flink.artifact.name>
     </properties>
 
     <build>
